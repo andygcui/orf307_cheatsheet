@@ -1,0 +1,447 @@
+\documentclass[6pt,landscape]{extarticle}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsfonts,bm}
+\usepackage{multicol}
+\usepackage{geometry}
+\geometry{left=0.7cm,right=0.7cm,top=0.7cm,bottom=0.7cm,landscape}
+\usepackage{parskip}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\setlist{leftmargin=*,nosep,itemsep=0pt,topsep=0pt}
+\pagestyle{empty}
+\setlength{\columnsep}{0.2cm}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0ex}
+\setlength{\abovedisplayskip}{1pt}
+\setlength{\belowdisplayskip}{1pt}
+\setlength{\abovedisplayshortskip}{1pt}
+\setlength{\belowdisplayshortskip}{1pt}
+\renewcommand{\arraystretch}{0.85}
+\titlespacing*{\subsection}{0pt}{0.4ex}{0.2ex}
+
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\Pbb}{\mathbb{P}}
+\newcommand{\N}{\mathcal{N}}
+\newcommand{\dd}{\,d}
+
+\begin{document}
+\begin{multicols*}{3}
+
+\subsection*{12. Brownian Motion / Gaussian Facts}
+
+RV $Z\sim N(0,1)$ has pdf $f_Z(z)=\frac1{\sqrt{2\pi}}e^{-z^2/2}$, $z\in\R$. \\
+If $X=\mu+\sigma Z$, then $X\sim N(\mu,\sigma^2)$ with pdf
+$f_X(x)=\frac1{\sqrt{2\pi\sigma^2}}
+e^{-(x-\mu)^2/(2\sigma^2)}$. \\
+
+MGF:
+if $Z\sim N(0,1)$, $M_Z(t)=\E[e^{tZ}]=e^{t^2/2}$.\\
+If $X\sim N(\mu,\sigma^2)$, $M_X(t)=\E[e^{tX}]
+=e^{t\mu+\frac12t^2\sigma^2}$. \\
+Useful:
+$\E[e^{aB_t+bt}]
+=e^{bt+\frac12a^2t}$. \\
+
+Correlation/covariance:
+$\operatorname{corr}(X,Y)
+=\frac{\operatorname{Cov}(X,Y)}
+{\sqrt{\Var(X)\Var(Y)}}$. \\
+$\operatorname{Cov}(X,Y)
+=\E[XY]-\E[X]\E[Y]
+=\E[(X-\mu_X)(Y-\mu_Y)]$. \\
+
+Properties of BM: $B_t\sim N(0,t)$,
+$\E[B_t]=0$,
+$\Var(B_t)=t$. \\
+$B_t-B_s\sim N(0,t-s)$,
+$\E[B_t-B_s]=0$,
+$\Var(B_t-B_s)=t-s$. \\
+$\Cov(B_s,B_t)=s=\min(s,t)$ for $s\le t$. \\
+Increment decomposition: $B_t=B_s+(B_t-B_s)$, where $B_t-B_s$ independent of $B_s$. 
+\subsection*{13. It\^o Calculus}
+
+It\^o integral:
+$\int_0^T H_t\,dB_t = \lim_{\|\Pi\|\to0} \sum_{i=1}^n H(t_{i-1})(B_{t_i}-B_{t_{i-1}})$
+with $H$ evaluated at left endpoint (adapted/predictable). \\
+$H(t_{i-1})$ independent of increment $B_{t_i}-B_{t_{i-1}}$. \\
+
+It\^o integral properties:\\
+$\int_0^T(\alpha H_t+\beta G_t)\,dB_t = \alpha\int_0^T H_t\,dB_t + \beta\int_0^T G_t\,dB_t$\\
+$\E\!\left[\int_0^T H_t\,dB_t\right]=0$\\
+$\E\!\left[\left(\int_0^T H_t\,dB_t\right)^2\right] = \E\!\left[\int_0^T H_t^2\,dt\right]$\\
+If $H$ deterministic:
+$\int_0^T H_t\,dB_t \sim N\!\left(0,\int_0^T H_t^2dt\right)$\\
+Useful:
+$\Var(\int_0^T H_t\,dB_t)
+=
+\E[\int_0^T H_t^2dt]$. \\
+
+It\^o process:
+$X_t = X_0+\int_0^t\mu_s\,ds+\int_0^t\sigma_s\,dB_s$\\
+Differential form: $dX_t=\mu_tdt+\sigma_tdB_t$; 
+($\mu_t$ = drift, $\sigma_t$ = volatility/diffusion) \\
+Brownian motion w/ drift: $X_t=x_0+\mu t+\sigma B_t$
+
+It\^o rules:
+(1) $(dt)^2=0,\qquad$ (2)$dt\,dB_t=0,\qquad$ (3) $(dB_t)^2=dt$
+
+Simple formula:
+$df(B_t)=\frac12f''(B_t)\,(dB_t)^2+f'(B_t)\,dB_t$
+
+General It\^o formula:
+$df=f_tdt+f_xdX_t+\frac12f_{xx}(dX_t)^2$
+
+\subsection*{14. Stochastic Diff Eqs}
+
+Arithmetic BM: $dX_t=\mu dt+\sigma dB_t$
+Solution: $X_t=x_0+\mu t+\sigma B_t$
+Hence
+$X_t\sim N(x_0+\mu t,\sigma^2t)$
+with
+$\E[X_t]=x_0+\mu t,\qquad \Var(X_t)=\sigma^2t$
+
+Geometric BM (GBM): $dX_t=\mu X_tdt+\sigma X_tdB_t$
+Closed form: $X_t = x_0\exp\!\left( \left(\mu-\frac12\sigma^2\right)t +\sigma B_t \right)$
+Thus
+$\log X_t \sim N\!\left( \log x_0+ \left(\mu-\frac12\sigma^2\right)t, \ \sigma^2t \right)$
+So $X_t$ is lognormal and stays positive if $x_0>0$. \\
+Moments: $\E[X_t]=x_0e^{\mu t}$
+$\Var(X_t) = x_0^2e^{2\mu t}(e^{\sigma^2t}-1)$
+
+Ornstein-Uhlenbeck (OU): $dX_t=-\alpha X_tdt+\sigma dB_t$
+Solution: $X_t=e^{-\alpha t}x_0 + \sigma\int_0^te^{-\alpha(t-s)}dB_s$
+Distribution: $X_t\sim N\!\left( e^{-\alpha t}x_0, \ \frac{\sigma^2}{2\alpha}(1-e^{-2\alpha t}) \right)$
+Hence
+$\E[X_t]=e^{-\alpha t}x_0$
+$\Var(X_t) = \frac{\sigma^2}{2\alpha}(1-e^{-2\alpha t})$
+As $t\to\infty$:
+$X_t\Rightarrow N\!\left(0,\frac{\sigma^2}{2\alpha}\right)$
+
+\subsection*{15. Black-Scholes Model}
+Black-Scholes market: $dS_t=\mu S_tdt+\sigma S_tdW_t$,
+$dB_t=rB_tdt$, $B_t=e^{rt}$. \\
+Value function: option price $=V(t,S_t)$.
+For payoff $\Phi(S_T)$, terminal condition $V(T,s)=\Phi(s)$. \\
+Self-financing replication: $h_t^SS_t+h_t^BB_t=V(t,S_t)$,
+$d(h_t^SS_t+h_t^BB_t)=h_t^SdS_t+h_t^BdB_t$. \\
+Black-Scholes PDE: $V_t+rsV_s+\frac12\sigma^2s^2V_{ss}-rV=0$,
+$V(T,s)=\Phi(s)$. \\
+replicate with: $h_t^S=V_s(t,S_t)=\Delta$ shares of stock,
+$h_t^B=\frac{V(t,S_t)-h_t^SS_t}{B_t}$ units of bond. \\
+Call: $\Phi(s)=(s-K)^+$.
+$C(t,s)=sN(d_1)-Ke^{-r(T-t)}N(d_2)$,
+$d_1=\frac{\log(s/K)+(r+\frac12\sigma^2)(T-t)}
+{\sigma\sqrt{T-t}}$,
+$d_2=d_1-\sigma\sqrt{T-t}$. \\
+Put: $P(t,s)=Ke^{-r(T-t)}N(-d_2)-sN(-d_1)$. \\
+
+Intrinsic call value: $(s-K)^+$.
+Extrinsic value: $C(t,s)-(s-K)^+$.
+Extrinsic/time value usually $\downarrow$ as $t\to T$, $\uparrow$ with $\sigma$, largest near $s\approx K$.
+
+\subsection*{16. Feynman--Kac}
+If $u$ solves
+$u_t+\mu(t,x)u_x+\frac12\sigma(t,x)^2u_{xx}-ru=0$ with terminal condition
+$u(T,x)=\Phi(x),$
+then $u(t,x)=e^{-r(T-t)}\E[\Phi(X_T)\mid X_t=x]$
+where $dX_t=\mu(t,X_t)dt+\sigma(t,X_t)dW_t$. \\
+FK payoff tricks: $x^2\to\E[X_T^2]=\Var(X_T)+\E[X_T]^2$; $e^x\to$ use normal MGF; $\log x\to$ solve $X_T$ then take $\E[\log X_T]$ \\
+
+Black-Scholes Feynman--Kac:\\
+If
+$V_t+rsV_s+\frac12\sigma^2s^2V_{ss}-rV=0, \qquad V(T,s)=\Phi(s),$
+then
+$V(t,s) = e^{-r(T-t)} \E^Q[\Phi(S_T)\mid S_t=s]$
+where under risk-neutral measure $Q$,
+$dS_t=rS_tdt+\sigma S_tdB_t^Q.$\\
+Physical measure: $dS_t=\mu S_tdt+\sigma S_tdB_t.$\\
+Risk-neutral: replace $\mu$ by $r$.
+
+\subsection*{17. Solving Black-Scholes / Payoff Templates}
+Under $Q$:
+$S_T=s\exp((r-\frac12\sigma^2)\tau+\sigma\sqrt{\tau}Z)$,
+$\tau=T-t$, $Z\sim N(0,1)$. \\
+Pricing: $V(t,s)=e^{-r\tau}\E^Q[\Phi(S_T)\mid S_t=s]$. \\
+\textbf{Forward payoff} $\Phi(S_T)=S_T-K$:
+$V(t,s)=s-Ke^{-r\tau}$.
+Forward price at $t=0$: $K=S_0e^{rT}$. \\
+\textbf{Power payoff} $\Phi(S_T)=S_T^a$:
+$V(t,s)=s^a\exp\!\left((a-1)r\tau+\frac12a(a-1)\sigma^2\tau\right)$. \\
+\textbf{Special:} $\Phi(S_T)=1/S_T^2$:
+$V(t,s)=s^{-2}e^{3(\sigma^2-r)\tau}$. \\
+\textbf{Log payoff} $\Phi(S_T)=\log S_T$:
+$V(t,s)=e^{-r\tau}\left[\log s+(r-\frac12\sigma^2)\tau\right]$. \\
+\textbf{Cash-or-nothing binary call} $\Phi(S_T)=\mathbf1_{\{S_T\ge K\}}$:
+$V(t,s)=e^{-r\tau}N(d_2)$. \\
+\textbf{Call:} $C(t,s)=sN(d_1)-Ke^{-r\tau}N(d_2)$.
+\subsection*{18. Greeks / Implied Volatility}
+
+\textbf{Delta}: $\Delta=\frac{\partial V}{\partial s}$
+Call: $\Delta_C=N(d_1)$
+Put: $\Delta_P=N(d_1)-1$
+Stock: $\Delta_S=1$
+Bond: $\Delta_B=0$
+Forward: $\Delta_F=1$\\
+Properties of call delta:
+(1) $0\le\Delta_C\le1$;
+(2) always positive (increases in stock price can only help
+the option price);
+(3) $\approx0$ deep OTM;
+(4) $\approx1$ deep ITM;
+(5) $\approx1/2$ near ATM. \\
+Portfolio delta: $\Delta^\Pi=\sum_i\Delta_i$
+Delta neutral: $\Delta^\Pi=0$
+Covered call: $\Delta_{CC}=1-N(d_1)$
+Straddle: $\Delta_{\text{str}} = \Delta_C+\Delta_P = 2N(d_1)-1 = 1+2\Delta_P$
+
+\textbf{Gamma}:
+$\Gamma=\frac{\partial^2V}{\partial s^2}$ = how much pain you're going to feel if you take a hedge \\ 
+Call/put: $\Gamma_C=\Gamma_P = \frac{N'(d_1)}{s\sigma\sqrt{T-t}}$
+Stock/bond/forward: $\Gamma=0$ \\
+Properties:
+(1) always positive;
+(2) largest near ATM;
+(3) $\approx0$ deep OTM/ITM;
+(4) larger near maturity. \\
+$\Gamma_S = 0, \Gamma_B = 0, \Gamma_F = 0$
+
+\textbf{Theta}:
+$\Theta=\frac{\partial V}{\partial t}$ = how fast the diff between intrinsic \& extrinsic value vanishes\\
+Call: $\Theta_C = -\frac{s\sigma N'(d_1)}{2\sqrt{T-t}} -rKe^{-r(T-t)}N(d_2)$ \\
+Theta properties:
+(1) usually negative (as time passes, less opportunity for
+favorable stock moves);
+(2) most negative near ATM;
+(3) $\approx0$ deep OTM;
+(4) $\approx-rKe^{-r(T-t)}$ deep ITM;
+(5) more negative near maturity. \\
+Intrinsic value: $(s-K)^+$
+Extrinsic value: $V-(s-K)^+$
+
+\textbf{Vega}:
+$\nu=\frac{\partial V}{\partial\sigma}$\\
+Call/put: $\nu_C=\nu_P=sN'(d_1)\sqrt{T-t}$\\
+Properties:
+(1) always positive (greater volatility = more change
+for favorable moves in stock price);
+(2) largest near ATM;
+(3) $\approx0$ deep OTM/ITM;
+(4) larger for long maturity.
+
+\textbf{Rho}:
+$\rho=\frac{\partial V}{\partial r}$\\
+Call: $\rho_C = K(T-t)e^{-r(T-t)}N(d_2)$\\
+Properties:
+(1) positive for calls (higher r increases call price);
+(2) largest deep ITM;
+(3) $\approx0$ deep OTM;
+(4) larger for long maturity (interest rates have more time to affect discounted strike). \\
+
+Put-call parity: $C+Ke^{-r(T-t)}=P+s$
+Hence
+$\nu_C=\nu_P, \qquad \Gamma_C=\Gamma_P$
+
+Black-Scholes identity: $\Theta+r s\Delta+\frac12\sigma^2s^2\Gamma-rV=0$
+
+\subsection*{19. Volatility / Beyond Black-Scholes}
+
+Historical volatility:
+observe
+$S_0,S_{\Delta t},\dots,S_{N\Delta t}$
+Log returns: $R_k = \log\!\left( \frac{S_{(k+1)\Delta t}}{S_{k\Delta t}} \right)$
+Estimator: $\hat\sigma^2 = \frac1{(N-1)\Delta t} \sum_{k=0}^{N-1}(R_k-\bar R)^2$
+$\bar R=\frac1N\sum_{k=0}^{N-1}R_k$
+Problems:
+(1) volatility changes over time
+(2) depends on time window
+(3) depends on sampling frequency \\
+
+Implied volatility:
+find $\sigma_{\text{imp}}$ such that
+$C_{BS}(S_0,K,r,\sigma_{\text{imp}},T) = C_{\text{mkt}}$
+Compute numerically: (1) bisection method or (2) Newton's method
+
+Newton: $\sigma_{n+1} = \sigma_n - \frac{f(\sigma_n)}{f'(\sigma_n)}$
+where
+$f(\sigma) = C_{BS}(\sigma)-C_{\text{mkt}}$
+and
+$f'(\sigma)=\text{vega}$
+
+\textbf{VIX}: market expectation of volatility over next $\approx30$ days, computed from S\&P 500 option prices = $\sqrt{ \frac{2e^{rT}}{T} \left( \int_0^F\frac{P(K)}{K^2}dK + \int_F^\infty\frac{C(K)}{K^2}dK \right) }$\\
+Fear index: high VIX $\Rightarrow$ market expects large moves. \\
+$T$ = maturity,
+$r$ = risk-free rate,
+$F$ = forward price,
+$P(K)$ = put price,
+$C(K)$ = call price. 
+
+\subsection*{20. Markowitz Theory}
+Assets: $R_i=\frac{S_i(1)-S_i(0)}{S_i(0)}$
+Mean vector / covariance matrix:
+\[
+\mu=
+\begin{bmatrix}
+\E[R_1]\\ \vdots\\ \E[R_n]
+\end{bmatrix},
+\qquad
+\Sigma_{ij}=\Cov(R_i,R_j)
+\]
+
+Portfolio holdings $h_i$:
+$V(0)=\sum_i h_iS_i(0), \qquad V(1)=\sum_i h_iS_i(1)$
+Portfolio return: $R^h=\frac{V(1)-V(0)}{V(0)}$
+
+Weights: $w_i=\frac{h_iS_i(0)}{V(0)}, \qquad \sum_i w_i=1$
+Then
+$R^w=w^\top R$
+$\E[R^w]=w^\top\mu$
+$\Var(R^w)=w^\top\Sigma w$
+Volatility: $\sigma_w=\sqrt{w^\top\Sigma w}$
+
+Dominance:
+portfolio $A$ dominates $B$ if
+$\mu_A\ge\mu_B, \qquad \sigma_A\le\sigma_B$
+
+Efficient frontier:
+set of portfolios that can't be dom. \\
+
+Minimum variance portfolio: $\min_w w^\top\Sigma w \quad \text{s.t. } w^\top\mathbf1=1$
+Solution: $w_{\min} = \frac{\Sigma^{-1}\mathbf1} {\mathbf1^\top\Sigma^{-1}\mathbf1}$
+$\mu_{\min} = \frac{\mu^\top\Sigma^{-1}\mathbf1} {\mathbf1^\top\Sigma^{-1}\mathbf1}$
+$\sigma_{\min}^2 = \frac1{\mathbf1^\top\Sigma^{-1}\mathbf1}$
+
+Target-return minimum variance: $\min_w w^\top\Sigma w$
+subject to
+$w^\top\mu=\mu^*, \qquad w^\top\mathbf1=1$
+Define
+$A=\mathbf1^\top\Sigma^{-1}\mathbf1, \quad B=\mu^\top\Sigma^{-1}\mathbf1,$
+$C=\mu^\top\Sigma^{-1}\mu, \qquad D=AC-B^2$
+Solution: $w_{\mu^*} = \frac{C-B\mu^*}{D}\Sigma^{-1}\mathbf1 + \frac{A\mu^*-B}{D}\Sigma^{-1}\mu$
+
+Market / tangency portfolio: $\max_w \frac{w^\top\mu-r_f} {\sqrt{w^\top\Sigma w}}$
+subject to
+$w^\top\mathbf1=1$
+Solution: $w_{\text{mkt}} = \frac{\Sigma^{-1}(\mu-r_f\mathbf1)} {\mathbf1^\top\Sigma^{-1}(\mu-r_f\mathbf1)}$
+Sharpe ratio: $\frac{\E[R^w]-r_f}{\sigma_w}$
+
+Mean-variance portfolio: $\max_w \mu^\top w -\frac\gamma2w^\top\Sigma w$
+subject to
+$w^\top\mathbf1=1$
+Solution: $w_{MV} = \frac1\gamma\Sigma^{-1}\mu - \frac1\gamma \frac{\mathbf1^\top\Sigma^{-1}\mu-\gamma} {\mathbf1^\top\Sigma^{-1}\mathbf1} \Sigma^{-1}\mathbf1$
+$\gamma$ = risk aversion parameter. \\
+\textbf{Lagrangian}:
+for
+$\min_x f(x) \quad \text{s.t. } g(x)=0,$
+define
+$L(x,\lambda)=f(x)+\lambda^\top g(x)$
+FOC: $\nabla_xL=0, \qquad \nabla_\lambda L=0$
+If convex in $x$ and concave in $\lambda$, solution is saddle point / optimizer.
+
+\subsection*{21. Two-Fund Theorem}
+Assume only risky assets exist; 
+$w^{(1)},w^{(2)}$ are 2 distinct efficient portfolios $\rightarrow$ every efficient portfolio can be written:
+$w=\lambda w^{(1)}+(1-\lambda)w^{(2)}, \qquad \lambda\in\R$
+
+In particular, if $w_{\min}$ is the minimum variance portfolio
+and $w'$ is any other efficient portfolio, then every efficient
+portfolio can be parameterized as
+$w(\lambda) = \lambda w' + (1-\lambda)w_{\min}, \qquad \lambda\ge0$
+
+Efficient frontier parameterization: $\mu(\lambda) = w(\lambda)^\top\mu$;
+$\sigma(\lambda) = \sqrt{ w(\lambda)^\top \Sigma w(\lambda) }$
+
+\subsection*{22. CAPM / Capital Market Line}
+CML: set of all portfolios that can't be dominated with both risky \&
+risk-free assets available. CML dominates risky efficient frontier except at tangency portfolio \\
+\textbf{Fund Separation Theorem}:
+if risk-free asset exists, every mean-variance efficient portfolio is obtained by combining: (1) the risk-free asset; (2) the market (tangency) portfolio $\rightarrow$ all investors hold same risky portfolio, differ only in how much they allocate to risk-free asset vs market portfolio. \\
+
+Efficient complete portfolio: $(1-\alpha)\text{ in risk-free asset} + \alpha\text{ in }w_{\text{mkt}}, \qquad \alpha\ge0$
+
+Capital Market Line: $\mu_p = r_f + \frac{\mu_{\text{mkt}}-r_f} {\sigma_{\text{mkt}}}\sigma_p$ \\
+Slope = Sharpe ratio:
+$\frac{\mu_{\text{mkt}}-r_f}{\sigma_{\text{mkt}}}$
+
+CAPM: $\E[R_i] = r_f + \beta_i (\E[R_{\text{mkt}}]-r_f)$
+where
+$\beta_i = \frac{\Cov(R_i,R_{\text{mkt}})} {\Var(R_{\text{mkt}})}$ \\
+(1) investors compensated only for systematic risk (2) idiosyncratic risk can be diversified away (3) higher $\beta$ $\Rightarrow$ higher expected return
+
+\textbf{Security Market Line (SML)}:
+plots expected return vs $\beta$:
+$\mu_i = r_f+\beta_i(\mu_{\text{mkt}}-r_f)$
+$\beta=1$ for market portfolio. \\
+\textbf{Diversification}:
+For equally weighted portfolio
+$w_{\text{avg}}=(1/n,\dots,1/n),$
+$\Var(R_{\text{avg}}) = \frac1{n^2}\sum_i\Var(R_i) + \frac1{n^2}\sum_{i\ne j}\Cov(R_i,R_j)$
+As $n\to\infty$:
+$\frac1{n^2}\sum_i\Var(R_i)\to0$
+(idiosyncratic risk disappears) but covariance term stays. \\
+
+Using CAPM for pricing: $R_i=\frac{S_1^i-S_0^i}{S_0^i}$
+so
+$S_0^i = \frac{\E[S_1^i]} {1+\E[R_i]}$
+where
+$\E[R_i] = r_f+\beta_i(\E[R_{\text{mkt}}]-r_f)$
+
+Estimating beta:
+regress excess stock return on excess market return: $R_t-r_f = \alpha + \beta(R_t^{\text{mkt}}-r_f) + \varepsilon_t$
+slope coefficient = estimated $\beta$. 
+
+\subsection*{23. Pricing with CAPM}
+
+One-period stock model:
+\[
+S_1=
+\begin{cases}
+uS_0 & \text{up}\\
+dS_0 & \text{down}
+\end{cases}
+\]
+Risk-free asset: $B_1=(1+r_f)B_0$
+
+Call option payoff: $C_1=\max(S_1-K,0)$
+with up/down values: $C_u,\quad C_d$
+
+Returns: $R_S=\frac{S_1-S_0}{S_0}, \qquad R_C=\frac{C_1-C_0}{C_0}$
+
+CAPM: $\E[R_i] = r_f+\beta_i(\E[R_{\text{mkt}}]-r_f)$
+
+Combining CAPM equations: $\E[R_C] = r_f + \frac{\beta_C}{\beta_S} (\E[R_S]-r_f)$
+
+Since
+$\E[R_C] = \frac{\E[C_1]-C_0}{C_0},$
+we get the CAPM pricing formula: $C_0 = \frac1{1+r_f} \left( \E[C_1] - \frac{C_u-C_d}{u-d} (\E[R_S]-r_f) \right)$
+
+Elasticity: $\Omega = \frac{\beta_C}{\beta_S} = \frac1{C_0}\frac{C_u-C_d}{u-d} = \frac{S_0\Delta}{C_0} =$ \% change in option price per 1\% change in stock price; 
+$\Delta = \frac{C_u-C_d}{S_0(u-d)}$\\
+No-arbitrage pricing: $q = \frac{(1+r_f)-d}{u-d}$
+(risk-neutral prob)
+
+$C_0 = \frac1{1+r_f}\E^Q[C_1] = \frac{qC_u+(1-q)C_d}{1+r_f}$
+
+\textbf{CAPM}
+(1) explains expected returns
+(2) uses market equilibrium, beta/risk premium, physical probability $P$
+(3) useful for required return / cost of equity \\
+\textbf{No-Arbitrage}
+(1) explains prices
+(2) uses replication/hedging, risk-neutral probability $Q$
+(3) no utility assumptions
+(4) useful for derivative pricing
+
+
+Continuous-time elasticity: $\frac{\beta_C}{\beta_S} = \frac{S_t}{C(t,S_t)} \frac{\partial C}{\partial S}(t,S_t) = \frac{S_t\Delta}{C(t,S_t)}$
+
+Black-Scholes recovered from CAPM: $\frac{\partial C}{\partial t} + rs\frac{\partial C}{\partial s} + \frac12\sigma^2s^2 \frac{\partial^2 C}{\partial s^2} -rC =0$
+
+Typical CAPM application: $r_E = r_f+\beta(E[R_{\text{mkt}}]-r_f)$
+(cost of equity / required return)
+
+\end{multicols*}
+\end{document}
