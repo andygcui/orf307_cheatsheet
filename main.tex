@@ -1,447 +1,322 @@
-\documentclass[6pt,landscape]{extarticle}
+\documentclass[8pt,landscape]{extarticle}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath,amssymb,amsfonts,bm}
 \usepackage{multicol}
 \usepackage{geometry}
-\geometry{left=0.7cm,right=0.7cm,top=0.7cm,bottom=0.7cm,landscape}
+\geometry{left=0.8cm,right=0.8cm,top=0.8cm,bottom=0.8cm,landscape}
 \usepackage{parskip}
 \usepackage{enumitem}
-\usepackage{titlesec}
 \setlist{leftmargin=*,nosep,itemsep=0pt,topsep=0pt}
 \pagestyle{empty}
-\setlength{\columnsep}{0.2cm}
+\setlength{\columnsep}{0.3cm}
 \setlength{\parindent}{0pt}
-\setlength{\parskip}{0ex}
-\setlength{\abovedisplayskip}{1pt}
-\setlength{\belowdisplayskip}{1pt}
-\setlength{\abovedisplayshortskip}{1pt}
-\setlength{\belowdisplayshortskip}{1pt}
-\renewcommand{\arraystretch}{0.85}
-\titlespacing*{\subsection}{0pt}{0.4ex}{0.2ex}
-
+\setlength{\parskip}{0.2ex}
 
 \newcommand{\R}{\mathbb{R}}
-\newcommand{\E}{\mathbb{E}}
-\newcommand{\Var}{\operatorname{Var}}
-\newcommand{\Cov}{\operatorname{Cov}}
-\newcommand{\Pbb}{\mathbb{P}}
-\newcommand{\N}{\mathcal{N}}
-\newcommand{\dd}{\,d}
+\newcommand{\norm}[1]{\|#1\|}
+\newcommand{\1}{\mathbf{1}}
+\newcommand{\0}{\mathbf{0}}
+\newcommand{\diag}{\text{diag}}
 
 \begin{document}
+
 \begin{multicols*}{3}
 
-\subsection*{12. Brownian Motion / Gaussian Facts}
+% ============================================================
+\subsection*{1. Vectors \& Basic Ops}
+$e_i^Ta=a_i$\\
+Inner product: $x^Ty = \sum x_i y_i$, $\approx 2n$ flops. \\
+Norms: $\norm{x}_2 = \sqrt{x^Tx}$, $\norm{x}_1 = \sum|x_i|$, $\norm{x}_\infty = \max|x_i|$ \\
+Angle: $x^Ty = \norm{x}\norm{y}\cos\theta$ \\
+Cauchy-Schwarz: $|x^Ty| \le \norm{x}\norm{y}$\\
+Linear independence: $\sum\alpha_i v_i=0 \Rightarrow \alpha_i=0$ \\
+Basis: $n$ independent vectors in $\R^n$ \\
+Orthonormal: $v_i^Tv_j=0$ for $i\ne j$, $\|v_i\|=1$; $n$ orthonormal vectors in $\R^n$ form ON basis.\\
+Affine function: $f(x)=a^Tx+b$ (linear + constant).
 
-RV $Z\sim N(0,1)$ has pdf $f_Z(z)=\frac1{\sqrt{2\pi}}e^{-z^2/2}$, $z\in\R$. \\
-If $X=\mu+\sigma Z$, then $X\sim N(\mu,\sigma^2)$ with pdf
-$f_X(x)=\frac1{\sqrt{2\pi\sigma^2}}
-e^{-(x-\mu)^2/(2\sigma^2)}$. \\
+\subsection*{2. Matrices \& Linear Systems}
+Positive Definite: $x^TAx>0\ \forall x\ne0$. \\
+Positive Semidefinite: $x^TAx\ge0\ \forall x$; \\
+$A^{-1}$ exists iff rows/cols lin. indep. iff rows/cols form basis \\
+Solve $Ax=b$: Diagonal $O(n)$, Triangular $O(n^2)$, Permutation $O(0)$ \\
+Solving Linear Systems: \\
+LU: $A=PLU$, factor $\frac23n^3$, solve $2n^2$. \\
+Cholesky: $A=LL^T$ for symmetric PD, factor $\frac13n^3$, solve $2n^2$.
 
-MGF:
-if $Z\sim N(0,1)$, $M_Z(t)=\E[e^{tZ}]=e^{t^2/2}$.\\
-If $X\sim N(\mu,\sigma^2)$, $M_X(t)=\E[e^{tX}]
-=e^{t\mu+\frac12t^2\sigma^2}$. \\
-Useful:
-$\E[e^{aB_t+bt}]
-=e^{bt+\frac12a^2t}$. \\
+\subsection*{3. Least Squares (L3)}
+Tall $A\in\R^{m\times n}$, $m>n$: usually no exact $Ax=b$. \\ 
+LS problem: $\min_x \|Ax-b\|_2^2$, residual $r=Ax-b$. \\
+Column view: LS finds $Ax^*\in\operatorname{col}(A)$ closest to $b$ \\
+Gradient: $\nabla\|Ax-b\|_2^2=2A^T(Ax-b)$. \\
+Optimality: $A^T(Ax^*-b)=0$ $\Rightarrow$ residual $r^*\perp\operatorname{col}(A)$. \\
+Solve: $A^TAx^*=A^Tb$. \\
+If $A$ full col rank: $x^*=(A^TA)^{-1}A^Tb$ \\
+Gram $G=A^TA$: symmetric PSD always; PD/invertible iff $A$ has indep. cols. \\
+Solve via Cholesky: factor $A^TA=LL^T$, solve $LL^Tx=A^Tb$ \\
+Complexity: form $A^TA$: $2mn^2$; Cholesky: $\frac13 n^3$; prefactored solve (new $b$): $\approx 2mn$ \\
 
-Correlation/covariance:
-$\operatorname{corr}(X,Y)
-=\frac{\operatorname{Cov}(X,Y)}
-{\sqrt{\Var(X)\Var(Y)}}$. \\
-$\operatorname{Cov}(X,Y)
-=\E[XY]-\E[X]\E[Y]
-=\E[(X-\mu_X)(Y-\mu_Y)]$. \\
+\subsection*{4. Least Squares Data Fitting}
+Data: $(x^{(i)},y^{(i)})$, $i=1,\ldots,N$. \\
+Model:  $\hat f(x)=\theta_1f_1(x)+\cdots+\theta_pf_p(x)$, linear in $\theta$. \\
+Matrix form: $A_{ij}=f_j(x^{(i)})$, $\hat y=A\theta$. \\
+LS: $\min_\theta \|A\theta-y\|_2^2$, $A^TA\theta^*=A^Ty$. \\
+Residual $r^{(i)}=y^{(i)}-\hat y^{(i)}$.
+MSE $=\frac1N\sum_i(r^{(i)})^2=\frac1N\|A\theta-y\|_2^2$; RMSE $=\sqrt{\mathrm{MSE}}$. \\
+Line: $\hat f(x)=\theta_1+\theta_2x$, $A=[\mathbf1\;\;x_d]$. \\
+Polynomial: $f_j(x)=x^{j-1}$, $\hat f(x)=\sum_{j=1}^p\theta_jx^{j-1}$,
+$A_{ij}=(x^{(i)})^{j-1}$ (Vandermonde). \\
+AR($M$): $\hat z_{t+1}=\theta_1z_t+\cdots+\theta_Mz_{t-M+1}$;
+$y^{(i)}=z_{M+i}$, $x^{(i)}=(z_{M+i-1},\ldots,z_i)$. \\
+General data fitting = linear regression on transformed features:
+$\tilde x=(f_2(x),\ldots,f_p(x))$, intercept $f_1(x)=1$. \\
+Validation: train/test split; overfitting = low train MSE + high test MSE.
+$k$-fold CV: train on $k-1$ folds, test on held-out fold; choose lowest test error, then retrain on all data.
 
-Properties of BM: $B_t\sim N(0,t)$,
-$\E[B_t]=0$,
-$\Var(B_t)=t$. \\
-$B_t-B_s\sim N(0,t-s)$,
-$\E[B_t-B_s]=0$,
-$\Var(B_t-B_s)=t-s$. \\
-$\Cov(B_s,B_t)=s=\min(s,t)$ for $s\le t$. \\
-Increment decomposition: $B_t=B_s+(B_t-B_s)$, where $B_t-B_s$ independent of $B_s$. 
-\subsection*{13. It\^o Calculus}
+\subsection*{5. Multi-Objective Least squares}
+Problem: $\min_x \sum_{i=1}^k \lambda_i\|A_ix-b_i\|^2$, with $\lambda_i>0$. \\
+Equivalent stacked LS:
+$\min_x\left\|\begin{bmatrix}\sqrt{\lambda_1}A_1\\ \vdots\\ \sqrt{\lambda_k}A_k\end{bmatrix}x-
+\begin{bmatrix}\sqrt{\lambda_1}b_1\\ \vdots\\ \sqrt{\lambda_k}b_k\end{bmatrix}\right\|^2$ \\
+Solution: $(\tilde A^T\tilde A)x^* = \tilde A^T\tilde b$ \\
+Sum of distances to points: $\sum_{i=1}^k\|x-a_i\|^2
+= \left\|\begin{bmatrix}I\\ \vdots\\ I\end{bmatrix}x
+-\begin{bmatrix}a_1\\ \vdots\\ a_k\end{bmatrix}\right\|^2$.
+Here $A\in\R^{kn\times n}$ stacks $k$ copies of $I_n$, $b\in\R^{kn}$ stacks $a_i$.\\
+Bi-criterion: $\min J_1+\lambda J_2$. If $J_2$ too big, increase $\lambda$; if $J_1$ too big, decrease $\lambda$. \\
+Trade-off curve: $(J_1(x^*(\lambda)), J_2(x^*(\lambda)))$, Pareto optimal \\
+Tikhonov: $\min \norm{Ax-y}^2 + \lambda\norm{x}^2 = \left\|\begin{bmatrix}A\\\sqrt{\lambda}I\end{bmatrix}x-\begin{bmatrix}y\\0\end{bmatrix}\right\|^2$ \\ 
+Normal equation: $(A^TA+\lambda I)x=A^Ty$ \\
+Smoothing: $\min \norm{Ax-y}^2 + \lambda\norm{Dx}^2$ ($D$ = diff matrix) \\
+Normal equation:  $(A^TA+\lambda D^TD)x=A^Ty$ \\
 
-It\^o integral:
-$\int_0^T H_t\,dB_t = \lim_{\|\Pi\|\to0} \sum_{i=1}^n H(t_{i-1})(B_{t_i}-B_{t_{i-1}})$
-with $H$ evaluated at left endpoint (adapted/predictable). \\
-$H(t_{i-1})$ independent of increment $B_{t_i}-B_{t_{i-1}}$. \\
-
-It\^o integral properties:\\
-$\int_0^T(\alpha H_t+\beta G_t)\,dB_t = \alpha\int_0^T H_t\,dB_t + \beta\int_0^T G_t\,dB_t$\\
-$\E\!\left[\int_0^T H_t\,dB_t\right]=0$\\
-$\E\!\left[\left(\int_0^T H_t\,dB_t\right)^2\right] = \E\!\left[\int_0^T H_t^2\,dt\right]$\\
-If $H$ deterministic:
-$\int_0^T H_t\,dB_t \sim N\!\left(0,\int_0^T H_t^2dt\right)$\\
-Useful:
-$\Var(\int_0^T H_t\,dB_t)
+\subsection*{6. Constrained Least Squares}
+Problem: $\min \norm{Ax-b}^2$ subject to $Cx=d$ \\
+Lagrangian $L(x,z)=\|Ax-b\|^2+z^T(Cx-d)$. \\
+KKT: $\begin{bmatrix}2A^TA & C^T \\ C & 0\end{bmatrix}\begin{bmatrix}x\\z\end{bmatrix} = \begin{bmatrix}2A^Tb\\d\end{bmatrix}$ \\
+KKT invertible iff $C$ has indep. rows and $[A;C]$ has indep cols \\
+Least norm: $\min_x\|x\|^2$ s.t. $Cx=d$ = CLS with $A=I,b=0$. \\
+Portfolio: weights $w$, $\mathbf1^Tw=1$; $w_i<0$ short; leverage $L=\|w\|_1$. \\
+Return matrix $R\in\R^{T\times n}$, portfolio returns $r=Rw$.
+$\operatorname{avg}(r)=\mathbf1^Tr/T$, 
+$\operatorname{std}(r)=\|r-\operatorname{avg}(r)\mathbf1\|/\sqrt T$. \\
+Annualized return $=P\operatorname{avg}(r)$; annualized risk $=\sqrt P\operatorname{std}(r)$. \\
+Portfolio CLS:
+$\min_w\|Rw-\rho\mathbf1\|^2$
+s.t. $\mathbf1^Tw=1$, $\mu^Tw=\rho$, $\mu=R^T\mathbf1/T$. \\
+KKT:
+$\begin{bmatrix}
+2R^TR & \mathbf1 & \mu\\
+\mathbf1^T & 0 & 0\\
+\mu^T & 0 & 0
+\end{bmatrix}
+\begin{bmatrix}w\\z_1\\z_2\end{bmatrix}
 =
-\E[\int_0^T H_t^2dt]$. \\
+\begin{bmatrix}2\rho T\mu\\1\\\rho\end{bmatrix}$. \\
+Two-fund theorem: $w^*(\rho)=w_0+\rho v$ affine in target return.
 
-It\^o process:
-$X_t = X_0+\int_0^t\mu_s\,ds+\int_0^t\sigma_s\,dB_s$\\
-Differential form: $dX_t=\mu_tdt+\sigma_tdB_t$; 
-($\mu_t$ = drift, $\sigma_t$ = volatility/diffusion) \\
-Brownian motion w/ drift: $X_t=x_0+\mu t+\sigma B_t$
+\subsection*{7. Linear Optimization / LP}
+LP general form: $\min c^Tx$ subj. to $Ax\le b$, $Dx=f$; inequalities are computed elementwise. \\
+Feasible $x$ satisfies constraints. $x^*$ optimal if feasible and $c^Tx^*\le c^Tx$ for all feasible $x$.
+Optimal value $p^*=c^Tx^*$. \\
+Special cases: infeasible $\Rightarrow p^*=+\infty$; unbounded below $\Rightarrow p^*=-\infty$; optimizer may be nonunique. \\
+Feasibility problem (find any $x$ subj. to LP constraints): $\min 0$ subj. to constraints of the LP\\
+Standard form: $\min c^Tx$ s.t. $Ax=b$, $x\ge0$. \\
+Transformations to standard form: \\
+maximize $c^Tx \Rightarrow$ minimize $-c^Tx$. \\
+$Ax\le b \Rightarrow Ax+s=b,\ s\ge0$; \\ 
+$Ax\ge b \Rightarrow Ax-s=b,\ s\ge0$. \\
+$x_i\le0 \Rightarrow x_i=-y_i,\ y_i\ge0$; \\
+$x_i$ free $\Rightarrow x_i=x_i^+-x_i^-$, $x_i^+,x_i^-\ge0$.
 
-It\^o rules:
-(1) $(dt)^2=0,\qquad$ (2)$dt\,dB_t=0,\qquad$ (3) $(dB_t)^2=dt$
+\subsection*{8. Piecewise Linear Optimization}
+Convex PL: $f(x)=\max_i(a_i^Tx+b_i)$ \\
+Minimization: $\min_x f(x)\equiv \min t$ s.t. $a_i^Tx+b_i\le t,\ \forall i$. \\
+Sum of PL: use separate $t_j$ for each max term; minimize $\sum_j t_j$. \\
+$\min\norm{Ax-b}_\infty$: $\min t$ s.t. $-t\1\le Ax-b\le t\1$ \\
+$\min\norm{Ax-b}_1$: $\min \1^Tu$ s.t. $-u\le Ax-b\le u$ \\
+$\ell_2^2$: sum squared errors. 
+$\ell_1$: sum absolute errors $\sum_i |r_i|$.
+$\ell_\infty$: max absolute error $\max_i |r_i|$.\\
+General abs trick: $|y_i|\le u_i \iff y_i\le u_i,\ -y_i\le u_i$. \\
+Constraint $\|x\|_1\le k$: introduce $u$, $-u\le x\le u$, $\mathbf1^Tu\le k$. \\
+Sparse recovery: $\min_x\|x\|_1$ s.t. $Ax=y$
+$\equiv \min_{x,u}\mathbf1^Tu$ s.t. $-u\le x\le u$, $Ax=y$; $\ell_1$ promotes sparsity. \\
+SVM separable: find $a,b$ s.t. $s_i(a^Tv_i+b)\ge1$, $s_i\in\{-1,1\}$; LP feasibility. \\
+Nonseparable hinge loss:
+$\min_{a,b}\sum_i\max\{0,1-s_i(a^Tv_i+b)\}$
+$\equiv \min\mathbf1^Tu$ s.t. $u_i\ge0$, $u_i\ge1-s_i(a^Tv_i+b)$.\\
+Worst-case max of linear costs: $\min_x \max_k (p^k)^Tx
+\equiv \min_{x,v} v$ s.t. $(p^k)^Tx\le v,\ \forall k$.\\
+Smoothness / total variation: $\sum_{t=1}^{T-1}|x_{t+1}-x_t|$\\
+LP via $y_t\ge x_{t+1}-x_t$, $y_t\ge -(x_{t+1}-x_t)$; minimize $\mathbf1^Ty$.
 
-Simple formula:
-$df(B_t)=\frac12f''(B_t)\,(dB_t)^2+f'(B_t)\,dB_t$
 
-General It\^o formula:
-$df=f_tdt+f_xdX_t+\frac12f_{xx}(dX_t)^2$
+\subsection*{9. Geometry \& Polyhedra (L9)}
+Hyperplane: $\{x\mid a^Tx=b\}$; halfspace: $\{x\mid a^Tx\le b\}$. 
+Polyhedron: $P=\{x\mid Ax\le b\}$ = finite halfspaces \\
+%{Convex combo: $\sum_i\alpha_ix_i$, $\alpha_i\ge0$, $\sum_i\alpha_i=1$.
+%Convex hull $\operatorname{conv}\{x_i\}$ = all convex combos. Polyhedra are convex. \\}
+Extreme point: cannot write $x=\alpha y+(1-\alpha)z$ with $y,z\in P$, $y,z\ne x$, $\alpha\in(0,1)$. \\
+Vertex: unique minimizer of some linear objective over $P$. \\
+Active constraints: $I(\bar x)=\{i\mid a_i^T\bar x=b_i\}$. \\
+Standard form $P=\{x\mid Ax=b,\ x\ge0\}$, $A\in\R^{m\times n}$ full row rank.
+Choose $m$ indep. columns $A_B$, set $x_N=0$, solve $A_Bx_B=b$.
+If $x_B\ge0$, then $x$ is a Basic Feasible Sol (BFS). \\
+Equivalence: vertex $\iff$ extreme point $\iff$ BFS. \\
+Degenerate BFS: $>n$ active constraints (in standard form, some basic variable $=0$) \\
+$P$ has an extreme point iff $P$ contains no line. Nonempty bounded polyhedron has a BFS.
+If LP optimum exists and $P$ has an extreme point, then some optimum is an extreme point.
 
-\subsection*{14. Stochastic Diff Eqs}
+\subsection*{11. The Simplex Method}
+Idea: move BFS $\to$ neighboring BFS with lower cost \\
+Reduced cost: $\bar c_j = c_j - c_B^T A_B^{-1}A_j$; $\bar c_j=0$ for basic \\
+Optimal: all $\bar c_j \ge 0$ \\
+If $\bar c_j<0$, bringing $x_j$ into basis decreases cost \\
+Feasible direction: $d_j=1$, solve $A_B d_B = -A_j$ \\
+Step length: $\theta^* = \min_{\{i\in B\mid d_i<0\}} (-x_i/d_i)$ (exiting index) \\
+Unbounded: if $d_B\ge0$, then $x+\theta d$ feasible $\forall\theta\ge0$ and cost $\to-\infty$. \\
+Simplex iteration: (1) $A_B^Tp=c_B$, $\bar c = c-A^Tp$; (2) if $\bar c\ge0$ stop; (3) choose $j$ with $\bar c_j<0$; (4) $A_B d_B=-A_j$, $d_j=1$; (5) if $d_B\ge0$ unbounded; (6) $\theta^*$ from min ratio; (7) $x\leftarrow x+\theta^*d$; (8) update basis \\
+Finite convergence (if non-degenerate): objective strictly decreases cost and there are finitely many BFSs\\
+Degeneracy can cause cycling; Bland's rule (smallest index entering/leaving) prevents cycling
 
-Arithmetic BM: $dX_t=\mu dt+\sigma dB_t$
-Solution: $X_t=x_0+\mu t+\sigma B_t$
-Hence
-$X_t\sim N(x_0+\mu t,\sigma^2t)$
-with
-$\E[X_t]=x_0+\mu t,\qquad \Var(X_t)=\sigma^2t$
 
-Geometric BM (GBM): $dX_t=\mu X_tdt+\sigma X_tdB_t$
-Closed form: $X_t = x_0\exp\!\left( \left(\mu-\frac12\sigma^2\right)t +\sigma B_t \right)$
-Thus
-$\log X_t \sim N\!\left( \log x_0+ \left(\mu-\frac12\sigma^2\right)t, \ \sigma^2t \right)$
-So $X_t$ is lognormal and stays positive if $x_0>0$. \\
-Moments: $\E[X_t]=x_0e^{\mu t}$
-$\Var(X_t) = x_0^2e^{2\mu t}(e^{\sigma^2t}-1)$
+\subsection*{12. Simplex Implementation}
+Need initial BFS for $\min c^Tx$ s.t. $Ax=b$, $x\ge0$. \\
+Phase (I): assume $b\ge0$ wlog; if $b_i<0$, multiply row $i$ by $-1$. 
+add artificial $y$, $\min \1^Ty$ s.t. $Ax+y=b$, $x\ge0,y\ge0$, start $x=0,y=b$; \\
+if opt $>0$ original LP infeasible; if $=0$ get BFS, drop $y$, goto (II) \\
+Phase (II): solve original from Phase I basis \\
+Bland's rule: entering = smallest index with $\bar c_j<0$; leaving = smallest index attaining min ratio \\
+Complexity: per iteration $O(n^2)$ (matrix update); worst-case $2^n$; average $O(n)$
 
-Ornstein-Uhlenbeck (OU): $dX_t=-\alpha X_tdt+\sigma dB_t$
-Solution: $X_t=e^{-\alpha t}x_0 + \sigma\int_0^te^{-\alpha(t-s)}dB_s$
-Distribution: $X_t\sim N\!\left( e^{-\alpha t}x_0, \ \frac{\sigma^2}{2\alpha}(1-e^{-2\alpha t}) \right)$
-Hence
-$\E[X_t]=e^{-\alpha t}x_0$
-$\Var(X_t) = \frac{\sigma^2}{2\alpha}(1-e^{-2\alpha t})$
-As $t\to\infty$:
-$X_t\Rightarrow N\!\left(0,\frac{\sigma^2}{2\alpha}\right)$
+\subsection*{13--14. Duality}
+Standard primal: $\min c^Tx$ s.t. $Ax=b,\ x\ge0$
+$\Rightarrow$ dual: $\max -b^Ty$ s.t. $A^Ty+c\ge0$, $y$ free. \\
+Inequality primal: $\min c^Tx$ s.t. $Ax\le b$
+$\Rightarrow$ dual: $\max -b^Ty$ s.t. $A^Ty+c=0,\ y\ge0$. \\
+Mixed primal: $\min c^Tx$ s.t. $Ax\le b,\ Cx=d$
+$\Rightarrow$ dual: $\max -b^Ty-d^Tz$ s.t. $A^Ty+C^Tz+c=0,\ y\ge0$, $z$ free. \\
+Sign convention: write constraints as $Ax-b\le0$ or $Ax-b=0$. Inequality dual vars $\ge0$; equality dual vars free. \\
+Weak duality: primal feasible $x$, dual feasible $y$ $\Rightarrow$ dual obj $\le$ primal obj; for inequality form $-b^Ty\le c^Tx$. \\
+Duality gap: $c^Tx+b^Ty\ge0$; if gap $=0$, $x,y$ optimal. \\
+Strong duality: if primal has optimum, dual has optimum and $p^*=d^*$. Primal unbounded $\Rightarrow$ dual infeasible; dual unbounded $\Rightarrow$ primal infeasible. \\
+Complementary slackness: $y_i(b_i-a_i^Tx)=0$. Hence $y_i>0\Rightarrow a_i^Tx=b_i$; $a_i^Tx<b_i\Rightarrow y_i=0$. \\
+KKT (checklist for proving a sol is opt.): primal feas ($Ax\le b$); dual feas ($A^Ty+c=0,\ y\ge0$); comp. slack ($y_i(Ax-b)_i=0\ \forall i$)\\
+Farkas: exactly one holds: (i) $\exists x\ge0$ s.t. $Ax=b$; 
+(ii) $\exists y$ s.t. $A^Ty\ge0,\ b^Ty<0$.
 
-\subsection*{15. Black-Scholes Model}
-Black-Scholes market: $dS_t=\mu S_tdt+\sigma S_tdW_t$,
-$dB_t=rB_tdt$, $B_t=e^{rt}$. \\
-Value function: option price $=V(t,S_t)$.
-For payoff $\Phi(S_T)$, terminal condition $V(T,s)=\Phi(s)$. \\
-Self-financing replication: $h_t^SS_t+h_t^BB_t=V(t,S_t)$,
-$d(h_t^SS_t+h_t^BB_t)=h_t^SdS_t+h_t^BdB_t$. \\
-Black-Scholes PDE: $V_t+rsV_s+\frac12\sigma^2s^2V_{ss}-rV=0$,
-$V(T,s)=\Phi(s)$. \\
-replicate with: $h_t^S=V_s(t,S_t)=\Delta$ shares of stock,
-$h_t^B=\frac{V(t,S_t)-h_t^SS_t}{B_t}$ units of bond. \\
-Call: $\Phi(s)=(s-K)^+$.
-$C(t,s)=sN(d_1)-Ke^{-r(T-t)}N(d_2)$,
-$d_1=\frac{\log(s/K)+(r+\frac12\sigma^2)(T-t)}
-{\sigma\sqrt{T-t}}$,
-$d_2=d_1-\sigma\sqrt{T-t}$. \\
-Put: $P(t,s)=Ke^{-r(T-t)}N(-d_2)-sN(-d_1)$. \\
+\subsection*{15. Sensitivity Analysis}
+Add variable $x_{n+1}$: old $(x^*,0)$ still primal feasible.
+still opt iff $A_{n+1}^Ty^*+c_{n+1}\ge0$; else add variable \& use primal simplex \\
+Add constraint $a_{m+1}^Tx=b_{m+1}$: old dual $(y^*,0)$ still dual feasible. still optimal iff $a_{m+1}^Tx^*=b_{m+1}$; else add constraint \& use dual simplex. \\
+RHS perturbation: $p^*(u)=\min\{c^Tx\mid Ax=b+u,\ x\ge0\}$ = optimal val when RHS $b$ is changed to $b+u$.
+Global lower bound: $p^*(u)\ge p^*(0)-u^Ty^*$. \\
+If basis $B$ unchanged:
+\begin{itemize}
+  \item $x_B^*(u)=A_B^{-1}(b+u)=x_B^*+A_B^{-1}u$, $x_N^*(u)=0$
+  \item $p^*(u)=p^*(0)-u^Ty^*=-(b+u)^Ty^*$
+  \item $\nabla p^*(0)=-y^* = $ shadow price; one more unit of RHS $i$ changes objective by $-y_i^*$
+  \item Objective perturbation: if $c\to c+\epsilon d$ and basis unchanged,
+$p^*(\epsilon)=p^*(0)+\epsilon d^Tx^*$.
+\end{itemize}
 
-Intrinsic call value: $(s-K)^+$.
-Extrinsic value: $C(t,s)-(s-K)^+$.
-Extrinsic/time value usually $\downarrow$ as $t\to T$, $\uparrow$ with $\sigma$, largest near $s\approx K$.
 
-\subsection*{16. Feynman--Kac}
-If $u$ solves
-$u_t+\mu(t,x)u_x+\frac12\sigma(t,x)^2u_{xx}-ru=0$ with terminal condition
-$u(T,x)=\Phi(x),$
-then $u(t,x)=e^{-r(T-t)}\E[\Phi(X_T)\mid X_t=x]$
-where $dX_t=\mu(t,X_t)dt+\sigma(t,X_t)dW_t$. \\
-FK payoff tricks: $x^2\to\E[X_T^2]=\Var(X_T)+\E[X_T]^2$; $e^x\to$ use normal MGF; $\log x\to$ solve $X_T$ then take $\E[\log X_T]$ \\
+\subsection*{16. Network Flow}
+Directed network: $m$ nodes, $n$ arcs \\
+Arc-node incidence $A\in\R^{m\times n}$: $A_{ij}=1$ if arc $j$ leaves $i$, $-1$ if enters, else $0$ \\
+Min cost flow: $\min c^Tx$ s.t. $Ax=b$, $0\le x\le u$, $\1^Tb=0$ \\
+Total unimodularity: node-arc incidence is TU \\
+Integrality: if $A$ TU and $b,u$ integer, BFS are integer \\
+Max flow: add arc sink$\to$source with cost $-1$, cap $\infty$; source $1$, sink $m$, $e=(1,0,\ldots,0,-1)$:
+$\max t$ s.t. $Ax=te$, $0\le x\le u$. \\
+As min-cost flow: $\min -t$ s.t. $[A\ -e]\binom{x}{t}=0$, $0\le x\le u$, $t\ge0$.\\
+Shortest path from $1$ to $m$: $\min c^Tx$ s.t. $Ax=e$, $0\le x\le1$,
+where $e=(1,0,\ldots,0,-1)$\\
+By TU, LP solution is binary, so $x_j=1$ iff arc $j$ is in path.\\
+Assignment: nodes = people \& tasks; arcs = possible assignments.
+$x_k$ = flow on arc $k$ ($x_{ij}=1$ if person $i$ assigned to task $j$, else $0$). 
+$A\in\R^{(\#nodes)\times(\#arcs)}$ incidence matrix:
+$A_{ik}=1$ if arc $k$ leaves node $i$, $-1$ if arc $k$ enters node $i$, $0$ otherwise.
+$b=(\1_N,-\1_N)$: people have supply $+1$, tasks have demand $-1$.
+Solve $\min c^Tx$ s.t. $Ax=b$, $0\le x\le1$.
 
-Black-Scholes Feynman--Kac:\\
-If
-$V_t+rsV_s+\frac12\sigma^2s^2V_{ss}-rV=0, \qquad V(T,s)=\Phi(s),$
-then
-$V(t,s) = e^{-r(T-t)} \E^Q[\Phi(S_T)\mid S_t=s]$
-where under risk-neutral measure $Q$,
-$dS_t=rS_tdt+\sigma S_tdB_t^Q.$\\
-Physical measure: $dS_t=\mu S_tdt+\sigma S_tdB_t.$\\
-Risk-neutral: replace $\mu$ by $r$.
 
-\subsection*{17. Solving Black-Scholes / Payoff Templates}
-Under $Q$:
-$S_T=s\exp((r-\frac12\sigma^2)\tau+\sigma\sqrt{\tau}Z)$,
-$\tau=T-t$, $Z\sim N(0,1)$. \\
-Pricing: $V(t,s)=e^{-r\tau}\E^Q[\Phi(S_T)\mid S_t=s]$. \\
-\textbf{Forward payoff} $\Phi(S_T)=S_T-K$:
-$V(t,s)=s-Ke^{-r\tau}$.
-Forward price at $t=0$: $K=S_0e^{rT}$. \\
-\textbf{Power payoff} $\Phi(S_T)=S_T^a$:
-$V(t,s)=s^a\exp\!\left((a-1)r\tau+\frac12a(a-1)\sigma^2\tau\right)$. \\
-\textbf{Special:} $\Phi(S_T)=1/S_T^2$:
-$V(t,s)=s^{-2}e^{3(\sigma^2-r)\tau}$. \\
-\textbf{Log payoff} $\Phi(S_T)=\log S_T$:
-$V(t,s)=e^{-r\tau}\left[\log s+(r-\frac12\sigma^2)\tau\right]$. \\
-\textbf{Cash-or-nothing binary call} $\Phi(S_T)=\mathbf1_{\{S_T\ge K\}}$:
-$V(t,s)=e^{-r\tau}N(d_2)$. \\
-\textbf{Call:} $C(t,s)=sN(d_1)-Ke^{-r\tau}N(d_2)$.
-\subsection*{18. Greeks / Implied Volatility}
-
-\textbf{Delta}: $\Delta=\frac{\partial V}{\partial s}$
-Call: $\Delta_C=N(d_1)$
-Put: $\Delta_P=N(d_1)-1$
-Stock: $\Delta_S=1$
-Bond: $\Delta_B=0$
-Forward: $\Delta_F=1$\\
-Properties of call delta:
-(1) $0\le\Delta_C\le1$;
-(2) always positive (increases in stock price can only help
-the option price);
-(3) $\approx0$ deep OTM;
-(4) $\approx1$ deep ITM;
-(5) $\approx1/2$ near ATM. \\
-Portfolio delta: $\Delta^\Pi=\sum_i\Delta_i$
-Delta neutral: $\Delta^\Pi=0$
-Covered call: $\Delta_{CC}=1-N(d_1)$
-Straddle: $\Delta_{\text{str}} = \Delta_C+\Delta_P = 2N(d_1)-1 = 1+2\Delta_P$
-
-\textbf{Gamma}:
-$\Gamma=\frac{\partial^2V}{\partial s^2}$ = how much pain you're going to feel if you take a hedge \\ 
-Call/put: $\Gamma_C=\Gamma_P = \frac{N'(d_1)}{s\sigma\sqrt{T-t}}$
-Stock/bond/forward: $\Gamma=0$ \\
-Properties:
-(1) always positive;
-(2) largest near ATM;
-(3) $\approx0$ deep OTM/ITM;
-(4) larger near maturity. \\
-$\Gamma_S = 0, \Gamma_B = 0, \Gamma_F = 0$
-
-\textbf{Theta}:
-$\Theta=\frac{\partial V}{\partial t}$ = how fast the diff between intrinsic \& extrinsic value vanishes\\
-Call: $\Theta_C = -\frac{s\sigma N'(d_1)}{2\sqrt{T-t}} -rKe^{-r(T-t)}N(d_2)$ \\
-Theta properties:
-(1) usually negative (as time passes, less opportunity for
-favorable stock moves);
-(2) most negative near ATM;
-(3) $\approx0$ deep OTM;
-(4) $\approx-rKe^{-r(T-t)}$ deep ITM;
-(5) more negative near maturity. \\
-Intrinsic value: $(s-K)^+$
-Extrinsic value: $V-(s-K)^+$
-
-\textbf{Vega}:
-$\nu=\frac{\partial V}{\partial\sigma}$\\
-Call/put: $\nu_C=\nu_P=sN'(d_1)\sqrt{T-t}$\\
-Properties:
-(1) always positive (greater volatility = more change
-for favorable moves in stock price);
-(2) largest near ATM;
-(3) $\approx0$ deep OTM/ITM;
-(4) larger for long maturity.
-
-\textbf{Rho}:
-$\rho=\frac{\partial V}{\partial r}$\\
-Call: $\rho_C = K(T-t)e^{-r(T-t)}N(d_2)$\\
-Properties:
-(1) positive for calls (higher r increases call price);
-(2) largest deep ITM;
-(3) $\approx0$ deep OTM;
-(4) larger for long maturity (interest rates have more time to affect discounted strike). \\
-
-Put-call parity: $C+Ke^{-r(T-t)}=P+s$
-Hence
-$\nu_C=\nu_P, \qquad \Gamma_C=\Gamma_P$
-
-Black-Scholes identity: $\Theta+r s\Delta+\frac12\sigma^2s^2\Gamma-rV=0$
-
-\subsection*{19. Volatility / Beyond Black-Scholes}
-
-Historical volatility:
-observe
-$S_0,S_{\Delta t},\dots,S_{N\Delta t}$
-Log returns: $R_k = \log\!\left( \frac{S_{(k+1)\Delta t}}{S_{k\Delta t}} \right)$
-Estimator: $\hat\sigma^2 = \frac1{(N-1)\Delta t} \sum_{k=0}^{N-1}(R_k-\bar R)^2$
-$\bar R=\frac1N\sum_{k=0}^{N-1}R_k$
-Problems:
-(1) volatility changes over time
-(2) depends on time window
-(3) depends on sampling frequency \\
-
-Implied volatility:
-find $\sigma_{\text{imp}}$ such that
-$C_{BS}(S_0,K,r,\sigma_{\text{imp}},T) = C_{\text{mkt}}$
-Compute numerically: (1) bisection method or (2) Newton's method
-
-Newton: $\sigma_{n+1} = \sigma_n - \frac{f(\sigma_n)}{f'(\sigma_n)}$
-where
-$f(\sigma) = C_{BS}(\sigma)-C_{\text{mkt}}$
-and
-$f'(\sigma)=\text{vega}$
-
-\textbf{VIX}: market expectation of volatility over next $\approx30$ days, computed from S\&P 500 option prices = $\sqrt{ \frac{2e^{rT}}{T} \left( \int_0^F\frac{P(K)}{K^2}dK + \int_F^\infty\frac{C(K)}{K^2}dK \right) }$\\
-Fear index: high VIX $\Rightarrow$ market expects large moves. \\
-$T$ = maturity,
-$r$ = risk-free rate,
-$F$ = forward price,
-$P(K)$ = put price,
-$C(K)$ = call price. 
-
-\subsection*{20. Markowitz Theory}
-Assets: $R_i=\frac{S_i(1)-S_i(0)}{S_i(0)}$
-Mean vector / covariance matrix:
+\subsection*{17--18. Interior-Point Methods}
+Newton: solve $h(x)=0$, $x^{k+1}=x^k+\Delta x$, $Dh(x^k)\Delta x=-h(x^k)$ \\
+For $\min c^Tx$ s.t. $Ax\le b$, add slack $s\ge0$: $Ax+s=b$. \\
+LP optimality: $h=[Ax+s-b;\; A^Ty+c;\; SY\1]=0$, $s,y\ge0$ \\
+Residuals: $r_p=Ax+s-b$, $r_d=A^Ty+c$, $\mu=s^Ty/m$ \\
+Central path (smoothed): $s_iy_i=\tau$, $s,y>0$; follow as $\tau\to0$ \\
+Newton system ($\sigma\in[0,1]$, $\sigma=1$ centering, $\sigma=0$ pure Newton):
 \[
-\mu=
-\begin{bmatrix}
-\E[R_1]\\ \vdots\\ \E[R_n]
-\end{bmatrix},
-\qquad
-\Sigma_{ij}=\Cov(R_i,R_j)
+\begin{bmatrix}0&A&I\\ A^T&0&0\\ S&0&Y\end{bmatrix}
+\begin{bmatrix}\Delta y\\\Delta x\\\Delta s\end{bmatrix}
+= \begin{bmatrix}-r_p\\-r_d\\-SY\1+\sigma\mu\1\end{bmatrix}
 \]
-
-Portfolio holdings $h_i$:
-$V(0)=\sum_i h_iS_i(0), \qquad V(1)=\sum_i h_iS_i(1)$
-Portfolio return: $R^h=\frac{V(1)-V(0)}{V(0)}$
-
-Weights: $w_i=\frac{h_iS_i(0)}{V(0)}, \qquad \sum_i w_i=1$
-Then
-$R^w=w^\top R$
-$\E[R^w]=w^\top\mu$
-$\Var(R^w)=w^\top\Sigma w$
-Volatility: $\sigma_w=\sqrt{w^\top\Sigma w}$
-
-Dominance:
-portfolio $A$ dominates $B$ if
-$\mu_A\ge\mu_B, \qquad \sigma_A\le\sigma_B$
-
-Efficient frontier:
-set of portfolios that can't be dom. \\
-
-Minimum variance portfolio: $\min_w w^\top\Sigma w \quad \text{s.t. } w^\top\mathbf1=1$
-Solution: $w_{\min} = \frac{\Sigma^{-1}\mathbf1} {\mathbf1^\top\Sigma^{-1}\mathbf1}$
-$\mu_{\min} = \frac{\mu^\top\Sigma^{-1}\mathbf1} {\mathbf1^\top\Sigma^{-1}\mathbf1}$
-$\sigma_{\min}^2 = \frac1{\mathbf1^\top\Sigma^{-1}\mathbf1}$
-
-Target-return minimum variance: $\min_w w^\top\Sigma w$
-subject to
-$w^\top\mu=\mu^*, \qquad w^\top\mathbf1=1$
-Define
-$A=\mathbf1^\top\Sigma^{-1}\mathbf1, \quad B=\mu^\top\Sigma^{-1}\mathbf1,$
-$C=\mu^\top\Sigma^{-1}\mu, \qquad D=AC-B^2$
-Solution: $w_{\mu^*} = \frac{C-B\mu^*}{D}\Sigma^{-1}\mathbf1 + \frac{A\mu^*-B}{D}\Sigma^{-1}\mu$
-
-Market / tangency portfolio: $\max_w \frac{w^\top\mu-r_f} {\sqrt{w^\top\Sigma w}}$
-subject to
-$w^\top\mathbf1=1$
-Solution: $w_{\text{mkt}} = \frac{\Sigma^{-1}(\mu-r_f\mathbf1)} {\mathbf1^\top\Sigma^{-1}(\mu-r_f\mathbf1)}$
-Sharpe ratio: $\frac{\E[R^w]-r_f}{\sigma_w}$
-
-Mean-variance portfolio: $\max_w \mu^\top w -\frac\gamma2w^\top\Sigma w$
-subject to
-$w^\top\mathbf1=1$
-Solution: $w_{MV} = \frac1\gamma\Sigma^{-1}\mu - \frac1\gamma \frac{\mathbf1^\top\Sigma^{-1}\mu-\gamma} {\mathbf1^\top\Sigma^{-1}\mathbf1} \Sigma^{-1}\mathbf1$
-$\gamma$ = risk aversion parameter. \\
-\textbf{Lagrangian}:
-for
-$\min_x f(x) \quad \text{s.t. } g(x)=0,$
-define
-$L(x,\lambda)=f(x)+\lambda^\top g(x)$
-FOC: $\nabla_xL=0, \qquad \nabla_\lambda L=0$
-If convex in $x$ and concave in $\lambda$, solution is saddle point / optimizer.
-
-\subsection*{21. Two-Fund Theorem}
-Assume only risky assets exist; 
-$w^{(1)},w^{(2)}$ are 2 distinct efficient portfolios $\rightarrow$ every efficient portfolio can be written:
-$w=\lambda w^{(1)}+(1-\lambda)w^{(2)}, \qquad \lambda\in\R$
-
-In particular, if $w_{\min}$ is the minimum variance portfolio
-and $w'$ is any other efficient portfolio, then every efficient
-portfolio can be parameterized as
-$w(\lambda) = \lambda w' + (1-\lambda)w_{\min}, \qquad \lambda\ge0$
-
-Efficient frontier parameterization: $\mu(\lambda) = w(\lambda)^\top\mu$;
-$\sigma(\lambda) = \sqrt{ w(\lambda)^\top \Sigma w(\lambda) }$
-
-\subsection*{22. CAPM / Capital Market Line}
-CML: set of all portfolios that can't be dominated with both risky \&
-risk-free assets available. CML dominates risky efficient frontier except at tangency portfolio \\
-\textbf{Fund Separation Theorem}:
-if risk-free asset exists, every mean-variance efficient portfolio is obtained by combining: (1) the risk-free asset; (2) the market (tangency) portfolio $\rightarrow$ all investors hold same risky portfolio, differ only in how much they allocate to risk-free asset vs market portfolio. \\
-
-Efficient complete portfolio: $(1-\alpha)\text{ in risk-free asset} + \alpha\text{ in }w_{\text{mkt}}, \qquad \alpha\ge0$
-
-Capital Market Line: $\mu_p = r_f + \frac{\mu_{\text{mkt}}-r_f} {\sigma_{\text{mkt}}}\sigma_p$ \\
-Slope = Sharpe ratio:
-$\frac{\mu_{\text{mkt}}-r_f}{\sigma_{\text{mkt}}}$
-
-CAPM: $\E[R_i] = r_f + \beta_i (\E[R_{\text{mkt}}]-r_f)$
-where
-$\beta_i = \frac{\Cov(R_i,R_{\text{mkt}})} {\Var(R_{\text{mkt}})}$ \\
-(1) investors compensated only for systematic risk (2) idiosyncratic risk can be diversified away (3) higher $\beta$ $\Rightarrow$ higher expected return
-
-\textbf{Security Market Line (SML)}:
-plots expected return vs $\beta$:
-$\mu_i = r_f+\beta_i(\mu_{\text{mkt}}-r_f)$
-$\beta=1$ for market portfolio. \\
-\textbf{Diversification}:
-For equally weighted portfolio
-$w_{\text{avg}}=(1/n,\dots,1/n),$
-$\Var(R_{\text{avg}}) = \frac1{n^2}\sum_i\Var(R_i) + \frac1{n^2}\sum_{i\ne j}\Cov(R_i,R_j)$
-As $n\to\infty$:
-$\frac1{n^2}\sum_i\Var(R_i)\to0$
-(idiosyncratic risk disappears) but covariance term stays. \\
-
-Using CAPM for pricing: $R_i=\frac{S_1^i-S_0^i}{S_0^i}$
-so
-$S_0^i = \frac{\E[S_1^i]} {1+\E[R_i]}$
-where
-$\E[R_i] = r_f+\beta_i(\E[R_{\text{mkt}}]-r_f)$
-
-Estimating beta:
-regress excess stock return on excess market return: $R_t-r_f = \alpha + \beta(R_t^{\text{mkt}}-r_f) + \varepsilon_t$
-slope coefficient = estimated $\beta$. 
-
-\subsection*{23. Pricing with CAPM}
-
-One-period stock model:
-\[
-S_1=
-\begin{cases}
-uS_0 & \text{up}\\
-dS_0 & \text{down}
-\end{cases}
-\]
-Risk-free asset: $B_1=(1+r_f)B_0$
-
-Call option payoff: $C_1=\max(S_1-K,0)$
-with up/down values: $C_u,\quad C_d$
-
-Returns: $R_S=\frac{S_1-S_0}{S_0}, \qquad R_C=\frac{C_1-C_0}{C_0}$
-
-CAPM: $\E[R_i] = r_f+\beta_i(\E[R_{\text{mkt}}]-r_f)$
-
-Combining CAPM equations: $\E[R_C] = r_f + \frac{\beta_C}{\beta_S} (\E[R_S]-r_f)$
-
-Since
-$\E[R_C] = \frac{\E[C_1]-C_0}{C_0},$
-we get the CAPM pricing formula: $C_0 = \frac1{1+r_f} \left( \E[C_1] - \frac{C_u-C_d}{u-d} (\E[R_S]-r_f) \right)$
-
-Elasticity: $\Omega = \frac{\beta_C}{\beta_S} = \frac1{C_0}\frac{C_u-C_d}{u-d} = \frac{S_0\Delta}{C_0} =$ \% change in option price per 1\% change in stock price; 
-$\Delta = \frac{C_u-C_d}{S_0(u-d)}$\\
-No-arbitrage pricing: $q = \frac{(1+r_f)-d}{u-d}$
-(risk-neutral prob)
-
-$C_0 = \frac1{1+r_f}\E^Q[C_1] = \frac{qC_u+(1-q)C_d}{1+r_f}$
-
-\textbf{CAPM}
-(1) explains expected returns
-(2) uses market equilibrium, beta/risk premium, physical probability $P$
-(3) useful for required return / cost of equity \\
-\textbf{No-Arbitrage}
-(1) explains prices
-(2) uses replication/hedging, risk-neutral probability $Q$
-(3) no utility assumptions
-(4) useful for derivative pricing
+Primal-dual path-following: choose $\sigma$, solve system, line search for max $\alpha$ keeping $s,y>0$, update. \\
+Barrier: $\min c^Tx-\tau\sum_i\log(s_i)$ s.t. $Ax+s=b$; barrier keeps $s_i>0$. \\
+Stop when $\|r_p\|,\|r_d\|,\ s^Ty$ are small. \\
+\textbf{Mehrotra predictor-corrector}: \\
+1. Predictor ($\sigma=0$), get $\Delta_a$, compute $\alpha_p,\alpha_d,\mu_a$ \\
+2. $\sigma = (\mu_a/\mu)^3$ \\
+3. Corrector RHS $-SY\1 - \Delta S_a\Delta Y_a\1 + \sigma\mu\1$ \\
+Complexity: IPM average $O(\log n)$ iterations, $O(n^3)$ per iter \\
+\textbf{IPM vs Simplex}: IPM variants polynomial, hard to warm-start, good large/sparse; Simplex exponential worst-case, needs BFS/Phase I, can warm-start, good small/medium.
 
 
-Continuous-time elasticity: $\frac{\beta_C}{\beta_S} = \frac{S_t}{C(t,S_t)} \frac{\partial C}{\partial S}(t,S_t) = \frac{S_t\Delta}{C(t,S_t)}$
+\subsection*{20--21. Integer Optimization}
+Problem: $\min c^Tx$ s.t. $Ax\le b$, $x_i\in\mathbb Z$ for $i\in I$ \\
+Binary: $x_i\in\{0,1\}$. LP relaxation removes integrality; for min, $p^*_{\rm rel}\le p^*_{\rm IP}$. \\
+Logic: at most one $\mathbf1^Tx\le1$; $x_1$ only if $x_2$: $x_1\le x_2$; both/neither: $x_1=x_2$. \\
+Knapsack: $\max c^Tx$ s.t. $a^Tx\le b$, $x_i\in\{0,1\}$. \\
+If-then ($y=0\Rightarrow x=0$) via $0\le x\le My$ (Big-M) \\ 
+Disjunction: $a^Tx\le b$ or $d^Tx\le f$ via $a^Tx\le b+yM$, $d^Tx\le f+(1-y)M$. \\
+Cardinality: $\operatorname{card}(x)\le k$ via $\sum_i y_i\le k$, $-My_i\le x_i\le My_i$, $y_i\in\{0,1\}$. \\
+Restricted values $x\in\{a_1,\ldots,a_d\}$: $x=a^Tz$, $\mathbf1^Tz=1$, $z\in\{0,1\}^d$. \\
+Better formulation = tighter relaxation. If $P_{\rm rel,1}\subset P_{\rm rel,2}$, then $p^*_{\rm rel,2}\le p^*_{\rm rel,1}\le p^*_{\rm IP}$ for min. \\
+Ideal formulation: LP relaxation gives integer optimum \\
 
-Black-Scholes recovered from CAPM: $\frac{\partial C}{\partial t} + rs\frac{\partial C}{\partial s} + \frac12\sigma^2s^2 \frac{\partial^2 C}{\partial s^2} -rC =0$
+\textbf{Branch-and-bound}: \\
+- Bound: $L_j$ (relaxation lower bound), $U_j$ (heuristic upper bound) \\
+- Global: $L=\min L_j$, $U=\min U_j$, gap $U-L$ \\
+- Branch: if $\bar x_i$ fractional, split into $x_i\le\lfloor\bar x_i\rfloor$ and $x_i\ge\lceil\bar x_i\rceil$. \\
+- Prune if relaxation infeasible, relaxation solution integer, or $L_j\ge U$ \\
+Incumbent = best integer feasible solution found so far; its value gives global upper bound $U$\\
 
-Typical CAPM application: $r_E = r_f+\beta(E[R_{\text{mkt}}]-r_f)$
-(cost of equity / required return)
+
+\subsection*{22--23. Robust Optimization / Uncertainty}
+Uncertain constraint: $a^Tx\le b$ with $a\in U$ \\
+Robust constr: $a^Tx\le b\ \forall a\in U
+\iff \max_{a\in U}a^Tx\le b$. \\
+Parametrize $a=\bar a+Mu$, $u\in U$. Let $w=M^Tx$.
+Then robust constraint is $\bar a^Tx+\max_{u\in U}w^Tu\le b$. \\
+\textbf{Box uncertainty} ($\|u\|_\infty\le\rho$):
+$\max w^Tu=\rho\|w\|_1$\\
+Robust: $\bar a^Tx+\rho\|M^Tx\|_1\le b$\\
+LP: $\bar a^Tx+\rho\mathbf1^Tt\le b$, $-t\le M^Tx\le t$. \\
+\textbf{$1$-norm uncertainty} ($\|u\|_1\le\rho$):
+$\max w^Tu=\rho\|w\|_\infty$ \\
+Robust: $\bar a^Tx+\rho\|M^Tx\|_\infty\le b$ \\
+LP: $\bar a^Tx+\rho\tau\le b$, $-\tau\le(M^Tx)_i\le\tau$. \\
+\textbf{Polyhedral uncertainty} ($U=\{u\mid Fu\le g\}$):
+$\max_{Fu\le g}w^Tu$ dualizes to
+$\min_\lambda g^T\lambda$ s.t. $F^T\lambda=w$, $\lambda\ge0$\\
+Robust LP: $\bar a^Tx+g^T\lambda\le b$, $F^T\lambda=M^Tx$, $\lambda\ge0$. \\
+Larger $\rho$ = more conservative. Robust solution trades nominal objective for better worst-case feasibility/performance.\\
+
+\textbf{Scenario Approach}:\\
+Given samples $d_1,\ldots,d_N$ of uncertain coefficient $a$,
+replace robust constraint $a^Tx\le b\ \forall a\in U$ with sample constraints
+$d_i^Tx\le b,\ i=1,\ldots,N$. \\
+Scenario LP: $\min c^Tx$ s.t. $d_i^Tx\le b,\ i=1,\ldots,N$. 
+Dataset itself becomes uncertainty set. \\
+Sample bound: if $d_i$ i.i.d., choose 
+$N\ge \frac{2}{\epsilon}\left(\ln\frac1\beta+n-1\right)$
+to get violation probability $\le\epsilon$ with confidence $\ge1-\beta$. \\
+$n$ = decision variables, $\epsilon$ = violation tolerance, $\beta$ = confidence failure probability.
+Pros: distribution-free, simple, no reformulation. 
+Cons: random solution, may violate unseen scenarios, larger $N$ increases solve time. \\
+
 
 \end{multicols*}
 \end{document}
